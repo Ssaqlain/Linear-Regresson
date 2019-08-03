@@ -1,0 +1,100 @@
+# importing important packages
+library(boot)                   # reading install files from library-- 
+library(car)                    # require for dwt test              
+
+data <- read.csv("Linear Regression 1.csv")            # Loading Data set
+str(data)
+summary(data)     
+dim(data)                                              # to see dimension of data
+
+boxplot(data$sales)                                    # sales is dependent(target) variable
+                    # Outliers are only on the higher end 
+quantile(data$sales, c(0,0.05,0.1,0.25,0.5,0.75,0.90,0.95,0.99,0.995,1))    
+data2 <- data[data$sales <=5156, ]                     # removing outlier by omiting values above 95th percentile
+boxplot(data2$sales)
+
+nrow(data)-nrow(data2)                                 # number of observations we loose
+(nrow(data)-nrow(data2))/nrow(data)*100                # percentage of data we loose
+
+data<- data2   
+
+sapply(data, function(x) sum(is.na(x)))                # Checking for missing value in all variables
+data <- na.omit(data)                                  # Removing missing values from data set only beacause they are few 
+                                                       # o.w. we would have used some imputaion method
+##### Checking if there is any linear realtionship using scatter plot  ##################################
+##### between dependent variable((sales) and numerical independent variables
+plot(data$sales,data$Item_Weight)
+plot(data$sales,data$Item_Visibility)
+plot(data$sales,data$Item_MRP)
+plot(data$sales,data$Yrs_since_inception)
+
+###### Fitting Model ################################################\
+# 1st iteration - fitting model using all independent variable
+fit<- lm(sales ~ Item_Weight+	Item_Fat_Content +	Item_Visibility +	Item_Type+	Item_MRP +	
+           Outlet_Identifier +	Yrs_since_inception +	Outlet_Size +	Outlet_Location_Type +	
+           Outlet_Type, data=data)
+summary(fit)
+
+## Things to check after summary
+## 1) ANOVA - 
+            ## H0 for ANOVA- Coe. of all independent variable=0 
+                            #i.e. not any one of the indepedent variable is effecting dependent varibale
+            ## H1 for ANOVA- Atleast one coe. of indp. variable is non zero
+                            # i.e. atlest one i ndependent variable is effecting dependent varible
+            ## To check it check p value at bottom line of output of summary
+                          # p-value < 0.05 accept H1 o.w. Fail to reject Ho
+## 2) checking effect of each Independent variable
+            ## H0 - the coe. = 0 i.e. this variable is not impacting on dependent variable
+            ## H1 - the coe. not = 0 i.e. this independent varibale impacting on dependent variable
+            ## If p value < 0.05 keep the varibale in model o.w. remove it in next iteration
+## 3) the more star varibale has more it is important to model
+## 4) Always delete only one variable at a time because deleteing that variable might 
+    # improve effect of other variable
+    # for some variable p value may be >0.05(i.e. remove that varibale)
+    # but if it has higher value of coe.(Estimate) we should keep it in model.
+## 5) R_squre - it takes value between 0 and 1. More R_squre better model
+               # R_squre > .5 means it is fairly acceptable model
+               # Drawback - R_squre increase even if we add completly redundant 
+                            # variable to the model 
+## 6) R_square_Adj - it does not increse unless we add some important variable to the model 
+               # value of R_square and R_square_Adj should be close
+
+## Removing the redundant or not significant variables from model and again fit model with remaining independent variable
+# 2nd interation
+fit<- lm(sales ~ Item_Weight+	Item_Fat_Content +	Item_Visibility +	Item_Type+	Item_MRP +	
+           Outlet_Identifier , data=data)
+summary(fit)
+
+# 3rd iteratrion
+fit<- lm(sales ~ 		Item_Type+	Item_MRP + Outlet_Identifier , data=data)
+summary(fit)
+
+##Final model 
+fit<- lm(sales ~ I(Item_Type == "Seafood")+I(Item_Type == "Dairy")+	Item_MRP + Outlet_Identifier , data=data)
+summary(fit)
+
+# To check adequacy of model and for model comparision ###################################
+AIC(fit)           #Akaike's information criterion (AIC) lower the better
+BIC(fit)           # Bayesian information criterion (BIC) lower the better
+
+vif(fit)      #Check Vif, vif>2 means presence of multicollinearity
+
+fitted(fit)    ## Get the predicted or fitted values
+
+# MAPE - Mean absolute percent error ##############################
+data$pred <- fitted(fit) 
+head(data)
+attach(data)
+(sum((abs(sales-pred))/sales))/nrow(data)    ## Caluculating MAPE
+           ## lower the value of MAPE better it is. MAPE should between 15%-20% ---lesser is better
+           
+##################################### Checking of Assumption #########
+# residuals should be noramally distributed --ad.test()
+# residuals should be homogeneous    --bptest()
+# residuals should be uncorrelated ##Autocorrelation ---dwt()
+res<- fit$residuals
+ad.test(res)            # Checking residuals are normally distributed, If p value >0.05 res are normally distributed
+bptest(fit)             # Breusch-Pagan test, H0-> error is homogeneous (p value should be more than 0.05)
+dwt(fit)                # test for auto correlation(p value should be >0.05, i.e. there is no serial correlation between residuals)  
+
+
