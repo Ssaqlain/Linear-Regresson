@@ -32,7 +32,7 @@ summary(fit)
 fit<-lm(Price_house ~ Taxi_dist + Hospital_dist + 
           + Builtup_area + Parking_type +  City_type +  Rainfall ,data=data)
 summary(fit)
-
+ 
 # 4th iteration ---- Taxi_dist
 fit<-lm(Price_house ~  Hospital_dist +  Builtup_area + 
           Parking_type +  City_type +  Rainfall ,data=data)
