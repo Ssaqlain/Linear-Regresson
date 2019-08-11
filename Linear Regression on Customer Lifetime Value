@@ -35,7 +35,7 @@ set.seed(1)                                                             # to fix
 pintu<- split(data, sample(1:nrow(data) > round(nrow(data) * .7)))      # spliting data into two part randomly in ratio of 70:30
 trainig_data <- pintu$"FALSE"                                           # assiging split data into two data set
 test_data <- pintu$"TRUE"
-
+ 
 ## Fitting linear regreesion model #####################################################################################################
 fit<- lm(clv ~ Response +	Coverage +	Education +	EmploymentStatus +	Gender +	Income +	Location.Code 
          +	Marital.Status +	Monthly.Premium.Auto +	Months.Since.Last.Claim +	Months.Since.Policy.Inception 
