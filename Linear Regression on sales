@@ -36,7 +36,7 @@ fit<- lm(sales ~ Item_Weight+	Item_Fat_Content +	Item_Visibility +	Item_Type+	It
 summary(fit)
 
 ## Things to check after summary
-## 1) ANOVA - 
+## 1) ANOVA -  
             ## H0 for ANOVA- Coe. of all independent variable=0 
                             #i.e. not any one of the indepedent variable is effecting dependent varibale
             ## H1 for ANOVA- Atleast one coe. of indp. variable is non zero
