@@ -1,4 +1,4 @@
-Taxi_dist,Market_dist,Hospital_dist,Carpet_area,Builtup_area,Parking_type,City_type,Rainfall,Price_house
+Taxi_dist,Market_dist,Hospital_dist,Carpet_area,Builtup_area,Parking_type,City_type,Rainfall,Price_house 
 9796,5250,10703,1659,1961,Open,CAT B,530,6649000
 8294,8186,12694,1461,1752,Not Provided,CAT B,210,3982000
 11001,14399,16991,1340,1609,Not Provided,CAT A,720,5401000
